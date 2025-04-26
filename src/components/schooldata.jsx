@@ -8,37 +8,29 @@ const SchoolData = () => {
   const [file, setFile] = useState(null);  
   const [iframeKey, setIframeKey] = useState(Date.now());
 
-  const role = localStorage.getItem("role"); // 👈 get role from localStorage
+  const handleImport = () => setShowUploadModal(true);  
 
-  const handleImport = () => {
-    if (role === 'admin') {
-      setShowUploadModal(true);
-    } else {
-      alert("You don't have permission to add new datasets.");
-    }
-  };
-
-  const handleFileChange = (e) => setFile(e.target.files[0]);
-
+  const handleFileChange = (e) => setFile(e.target.files[0]); 
+  
   const handleSubmit = async () => {
     if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-
+      const fileExtension = file.name.split('.').pop().toLowerCase();  
+  
       if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
         console.log('Submitting file:', file.name);
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', 'school');
-
+        formData.append('file', file);  
+        formData.append('type', 'school');  
+  
         try {
           const response = await fetch('http://localhost:8050/upload_dataset', {
             method: 'POST',
             body: formData
           });
-
+  
           const result = await response.json();
           console.log('Server Response:', result);
-
+  
           if (result.status === 'success') {
             alert(result.message);
             setIframeKey(Date.now());
@@ -46,14 +38,15 @@ const SchoolData = () => {
           } else {
             alert("Upload failed: " + result.message);
           }
+  
         } catch (error) {
           console.error('Error uploading file:', error);
           alert("An error occurred during upload.");
         }
-
-        setShowUploadModal(false);
+  
+        setShowUploadModal(false);  
         setFile(null);
-
+  
       } else {
         alert("Please select a valid CSV or Excel file.");
       }
@@ -61,6 +54,7 @@ const SchoolData = () => {
       alert("Please select a file before submitting.");
     }
   };
+  
 
   useEffect(() => {
     document.documentElement.style.setProperty('--zoom', zoomLevel); 
@@ -76,13 +70,10 @@ const SchoolData = () => {
       <header className="school-header">
         <h1>School Data</h1>
       </header>
-
-      {/* Only show Add button if role is admin */}
-      {role === 'admin' && (
-        <div className="import-export-sc">
-          <button onClick={handleImport}>Add New DataSet</button>
-        </div>
-      )}
+      
+      <div className="import-export-sc">
+        <button onClick={handleImport}>Add New DataSet</button> 
+      </div>
 
       <div className="cards-wrapper">
         {cardsData.map((card, index) => (
@@ -138,7 +129,6 @@ const SchoolData = () => {
         </div>
       )}
 
-      {/* Upload modal - only shown when admin clicks add */}
       {showUploadModal && (
         <div className="upload-modal-overlay-school" onClick={() => setShowUploadModal(false)}>
           <div className="upload-modal-school" onClick={(e) => e.stopPropagation()}>

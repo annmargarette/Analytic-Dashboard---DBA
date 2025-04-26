@@ -1,18 +1,11 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import App from "./App";
 import Login from "./components/login";
 
 const root = createRoot(document.getElementById("root"));
 
-// Check for both auth and role
 const ProtectedRoute = ({ children }) => {
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   return isLoggedIn ? children : <Navigate to="/login" />;
@@ -30,33 +23,17 @@ function RootRoutes() {
           </ProtectedRoute>
         }
       />
-      {/* Default redirect based on role */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
-            <RedirectBasedOnRole />
-          </ProtectedRoute>
-        }
-      />
     </Routes>
   );
 }
 
+// Needs to be defined INSIDE <Router> to use useNavigate
 function LoginWrapper() {
   const navigate = useNavigate();
 
-  const handleLogin = (role) => {
+  const handleLogin = () => {
     localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("role", role);
-
-    if (role === "admin") {
-      navigate("/school-data");
-    } else if (role === "user") {
-      navigate("/student-data");
-    } else {
-      navigate("/home"); // fallback
-    }
+    navigate("/home");
   };
 
   return <Login onLogin={handleLogin} />;
@@ -67,23 +44,10 @@ function AppWrapper() {
 
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("role");
     navigate("/login");
   };
 
   return <App onLogout={handleLogout} />;
-}
-
-function RedirectBasedOnRole() {
-  const role = localStorage.getItem("role");
-
-  if (role === "admin") {
-    return <Navigate to="/school-data" replace />;
-  } else if (role === "user") {
-    return <Navigate to="/student-data" replace />;
-  } else {
-    return <Navigate to="/home" replace />;
-  }
 }
 
 root.render(

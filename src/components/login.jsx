@@ -8,14 +8,15 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Clear any previous errors
     setErrors("");
 
-    if (username === "admin" && password === "admin123") {
-      onLogin("admin"); // Pass role
-    } else if (username === "user" && password === "1234") {
-      onLogin("user"); // Pass role
+    // Check if the username and password are correct
+    if (username === "user" && password === "1234") {
+      onLogin(); // Call the onLogin function passed from the parent (index.jsx)
     } else {
-      setErrors("Invalid username or password");
+      setErrors("Invalid username or password"); // Show an error message if credentials are wrong
     }
   };
 

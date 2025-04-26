@@ -6,39 +6,31 @@ const StudentData = () => {
   const [zoomLevel, setZoomLevel] = useState(1);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [file, setFile] = useState(null);
-  const [iframeKey, setIframeKey] = useState(Date.now());
+    const [iframeKey, setIframeKey] = useState(Date.now());
 
-  const role = localStorage.getItem("role"); // 👈 get user role from localStorage
-
-  const handleImport = () => {
-    if (role === 'admin') {
-      setShowUploadModal(true);
-    } else {
-      alert("You don't have permission to add new datasets.");
-    }
-  };
+  const handleImport = () => setShowUploadModal(true);
 
   const handleFileChange = (e) => setFile(e.target.files[0]);
 
   const handleSubmit = async () => {
     if (file) {
-      const fileExtension = file.name.split('.').pop().toLowerCase();
-
+      const fileExtension = file.name.split('.').pop().toLowerCase();  
+  
       if (['csv', 'xls', 'xlsx'].includes(fileExtension)) {
         console.log('Submitting file:', file.name);
         const formData = new FormData();
-        formData.append('file', file);
-        formData.append('type', 'student');
-
+        formData.append('file', file);  // <== Don't forget to append the actual file!
+        formData.append('type', 'student');  // optional, if backend handles it
+  
         try {
           const response = await fetch('http://localhost:8050/upload_dataset', {
             method: 'POST',
             body: formData
           });
-
+  
           const result = await response.json();
           console.log('Server Response:', result);
-
+  
           if (result.status === 'success') {
             alert(result.message);
             setIframeKey(Date.now());
@@ -46,14 +38,15 @@ const StudentData = () => {
           } else {
             alert("Upload failed: " + result.message);
           }
+  
         } catch (error) {
           console.error('Error uploading file:', error);
           alert("An error occurred during upload.");
         }
-
-        setShowUploadModal(false);
+  
+        setShowUploadModal(false);  
         setFile(null);
-
+  
       } else {
         alert("Please select a valid CSV or Excel file.");
       }
@@ -78,12 +71,9 @@ const StudentData = () => {
         <h1>Student Data</h1>
       </header>
 
-      {/* Only show Add button if user is admin */}
-      {role === 'admin' && (
-        <div className="import-export-top">
-          <button onClick={handleImport}>Add New DataSet</button>
-        </div>
-      )}
+      <div className="import-export-top">
+        <button onClick={handleImport}>Add New DataSet</button>
+      </div>
 
       <div className="cards-wrapper">
         {cardsData.map((card, index) => (
@@ -98,7 +88,7 @@ const StudentData = () => {
             <label>{card.label}</label>
             <iframe
               key={iframeKey}
-              src={`${card.src}?t=${new Date().getTime()}`}
+              src={card.src}
               title={card.label}
               style={{
                 width: '100%',
@@ -127,7 +117,7 @@ const StudentData = () => {
               <iframe
                 key={iframeKey}
                 src={selectedCard.src}
-                title={selectedCard.label}  
+                title={selectedCard.label}
                 style={{
                   width: '100%',
                   height: '100%',
@@ -140,7 +130,6 @@ const StudentData = () => {
         </div>
       )}
 
-      {/* Upload Modal - visible only when admin clicks the button */}
       {showUploadModal && (
         <div className="upload-modal-overlay-student" onClick={() => setShowUploadModal(false)}>
           <div className="upload-modal-student" onClick={(e) => e.stopPropagation()}>

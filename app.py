@@ -37,7 +37,7 @@ fig11 = generate_graph11(df_school)
 
 image_src_1 = create_gender_plot()
 image_src_2 = create_enrollment_bubble_chart()
-
+'''
 index_page = html.Div([
     html.H1("Welcome to Student Dashboard"),
     html.P("Graphs 7–11 preview below for quick visualization:"),
@@ -59,7 +59,7 @@ index_page = html.Div([
         dcc.Graph(id='school-bar-line-chart', figure=fig11),
     ], style={'padding': '20px'})
 ])
-
+'''
 CORS(server)
 UPLOAD_FOLDER = 'Data/Raw_data/'
 server.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
